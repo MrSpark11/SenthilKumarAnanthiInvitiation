@@ -1,7 +1,7 @@
 import './style.css'
 
 // ===== Configuration =====
-const INVITEE_NAMES = 'Mr. & Mrs. Rajesh Kumar'
+const INVITEE_NAMES = 'Mr. & Mrs. Senthil Kumar'
 const INVITEE_FAMILY = '& Family'
 const HOUSE_ADDRESS = '42, SVB Layout, Race Course Road, Coimbatore, Tamil Nadu 641018'
 const MAP_QUERY = 'Race Course Road, Coimbatore, Tamil Nadu'
@@ -11,14 +11,14 @@ const MAP_EMBED_LINK = `https://maps.google.com/maps?q=${encodeURIComponent(MAP_
 const MAP_DIRECTIONS_LINK = `https://www.google.com/maps/search/?api=1&query=${MAP_LINK_QUERY}`
 
 // Event date — November 2, 2026, 9:00 AM IST
-const EVENT_DATE = new Date('2026-11-02T09:00:00+05:30')
+const EVENT_DATE = new Date('2026-11-20T09:00:00+05:30')
 const EVENT_DATE_DISPLAY = {
-  day: '02',
+  day: '20',
   month: 'November',
   year: '2026',
-  weekday: 'Monday',
-  time: '9:00 AM',
-  muhurat: 'Auspicious Time: 9:00 AM – 11:30 AM',
+  weekday: 'Friday',
+  time: '4:30 AM',
+  muhurat: 'Auspicious Time: 4:30 AM – 06:00 AM',
 }
 
 // ===== SVG Icons =====
