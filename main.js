@@ -144,8 +144,11 @@ document.querySelector('#app').innerHTML = `
 const landing = document.getElementById('landing')
 const envelope = document.getElementById('envelope')
 const invitation = document.getElementById('invitation')
+let isOpening = false
 
 function openInvitation() {
+  if (isOpening) return
+  isOpening = true
   envelope.classList.add('opening')
   setTimeout(() => {
     landing.classList.add('hidden')
@@ -159,7 +162,7 @@ function openInvitation() {
   }, 600)
 }
 
-envelope.addEventListener('click', openInvitation)
+landing.addEventListener('click', openInvitation)
 
 // Lock scroll on landing
 document.body.style.overflow = 'hidden'
