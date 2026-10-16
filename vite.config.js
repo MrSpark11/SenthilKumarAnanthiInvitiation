@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: './',
+  plugins: [react()],
+  base: '/SenthilKumarAnanthiInvitiation/', // ⚠️ CRUCIAL: Replace with your exact repository name
 })
