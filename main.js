@@ -1,5 +1,3 @@
-import './style.css'
-
 // ===== Configuration =====
 const INVITEE_NAMES = 'Mr. & Mrs. Senthil Kumar'
 const INVITEE_FAMILY = '& Family'
