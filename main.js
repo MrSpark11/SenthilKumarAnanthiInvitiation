@@ -3,7 +3,7 @@ const INVITEE_NAMES = 'Senthil Kumar and Ananthi'
 const INVITEE_FAMILY = 'Ragav Karthik and Kaniyan'
 const HOUSE_ADDRESS = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 641022'
 const MAP_QUERY = 'Teachers Colony, Ashokapuram, Coimbatore - 641022'
-const MAP_EMBED_QUERY = 'Teachers Colony, Ashokapuram, Coimbatore - 641022'
+const MAP_EMBED_QUERY = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 641022'
 const MAP_LINK_QUERY = encodeURIComponent(MAP_QUERY)
 const MAP_EMBED_LINK = `https://maps.google.com/maps?q=${encodeURIComponent(MAP_EMBED_QUERY)}&t=&z=14&ie=UTF8&iwloc=&output=embed`
 const MAP_DIRECTIONS_LINK = `https://www.google.com/maps/search/?api=1&query=${MAP_LINK_QUERY}`
