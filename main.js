@@ -5,7 +5,7 @@ const HOUSE_ADDRESS = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 6
 const MAP_QUERY = 'Teachers Colony, Ashokapuram, Coimbatore - 641022'
 const MAP_EMBED_QUERY = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 641022'
 const MAP_LINK_QUERY = encodeURIComponent(MAP_QUERY)
-const MAP_EMBED_LINK = `https://maps.google.com/maps/VeJ26e9b1AduNFWq8
+const MAP_EMBED_LINK = `https://maps.google.com/maps/VeJ26e9b1AduNFWq8'
 const MAP_DIRECTIONS_LINK = `https://www.google.com/maps/search/?api=1&query=${MAP_LINK_QUERY}`
 
 // Event date — November 2, 2026, 9:00 AM IST
