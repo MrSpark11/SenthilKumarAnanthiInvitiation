@@ -34,10 +34,10 @@ document.querySelector('#app').innerHTML = `
   <!-- Landing / Click to Open -->
   <div class="landing" id="landing">
     <svg class="landing-ornament-top" height="120" viewBox="0 0 1200 120" preserveAspectRatio="none">
-      <path d="M0,0 L1200,0 L1200,0 Q600,120 0,0 Z" fill="rgba(201,125,74,0.15)"/>
+      <path d="M0,0 L1200,0 L1200,0 Q600,120 0,0 Z" fill="var(--primary-300)" opacity="0.22"/>
     </svg>
     <svg class="landing-ornament-bottom" height="120" viewBox="0 0 1200 120" preserveAspectRatio="none">
-      <path d="M0,120 L1200,120 L1200,120 Q600,0 0,120 Z" fill="rgba(201,125,74,0.15)"/>
+      <path d="M0,120 L1200,120 L1200,120 Q600,0 0,120 Z" fill="var(--primary-300)" opacity="0.22"/>
     </svg>
     <div class="envelope" id="envelope">
       <div class="envelope-flap"></div>
@@ -63,6 +63,9 @@ document.querySelector('#app').innerHTML = `
 
   <!-- Main Invitation -->
   <div class="invitation" id="invitation">
+    <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" hidden>
+      Music on
+    </button>
 
     <!-- House Section -->
     <section class="house-section reveal" id="houseSection">
@@ -136,7 +139,7 @@ document.querySelector('#app').innerHTML = `
     </section>
 
     <!-- Footer -->
-    <footer class="invitation-footer">
+    <footer class="invitation-footer reveal">
       <p>We can't wait to welcome you to our new home</p>
       <span>${INVITEE_NAMES} · Coimbatore · ${EVENT_DATE_DISPLAY.month} ${EVENT_DATE_DISPLAY.year}</span>
     </footer>
@@ -147,11 +150,99 @@ document.querySelector('#app').innerHTML = `
 const landing = document.getElementById('landing')
 const envelope = document.getElementById('envelope')
 const invitation = document.getElementById('invitation')
+const musicToggle = document.getElementById('musicToggle')
 let isOpening = false
+let audioContext
+let musicGain
+let musicEnabled = false
+let musicTimer
+
+function setMusicEnabled(enabled) {
+  musicEnabled = enabled
+  musicGain.gain.cancelScheduledValues(audioContext.currentTime)
+  musicGain.gain.setValueAtTime(musicGain.gain.value, audioContext.currentTime)
+  musicGain.gain.linearRampToValueAtTime(enabled ? 0.18 : 0, audioContext.currentTime + 0.3)
+  musicToggle.textContent = enabled ? 'Music on' : 'Music off'
+  musicToggle.setAttribute('aria-pressed', String(enabled))
+  musicToggle.setAttribute('aria-label', enabled ? 'Mute welcome music' : 'Play welcome music')
+  if (enabled && musicTimer === undefined) {
+    playWelcomePattern()
+  } else if (!enabled) {
+    window.clearTimeout(musicTimer)
+    musicTimer = undefined
+  }
+}
+
+function playWelcomePluck(frequency) {
+  const now = audioContext.currentTime
+  const noteGain = audioContext.createGain()
+  noteGain.gain.setValueAtTime(0.0001, now)
+  noteGain.gain.exponentialRampToValueAtTime(0.16, now + 0.08)
+  noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.6)
+  noteGain.connect(musicGain)
+
+  ;[1, 2.01].forEach((partial, index) => {
+    const oscillator = audioContext.createOscillator()
+    oscillator.type = 'sine'
+    oscillator.frequency.value = frequency * partial
+    oscillator.detune.value = index === 0 ? -2 : 2
+    oscillator.connect(noteGain)
+    oscillator.start(now)
+    oscillator.stop(now + 2.7)
+    oscillator.addEventListener('ended', () => oscillator.disconnect(), { once: true })
+  })
+
+  window.setTimeout(() => noteGain.disconnect(), 2800)
+}
+
+function playWelcomePattern(noteIndex = 0) {
+  const notes = [261.63, 392, 329.63, 392]
+  playWelcomePluck(notes[noteIndex])
+  musicTimer = window.setTimeout(() => playWelcomePattern((noteIndex + 1) % notes.length), 2400)
+}
+
+async function startWelcomeMusic() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext
+  if (!AudioContextClass) {
+    console.error('Welcome music is unavailable because this browser does not support Web Audio.')
+    musicToggle.textContent = 'Music unavailable'
+    musicToggle.disabled = true
+    musicToggle.hidden = false
+    return
+  }
+
+  try {
+    audioContext = new AudioContextClass()
+    musicGain = audioContext.createGain()
+    musicGain.gain.value = 0
+    musicGain.connect(audioContext.destination)
+
+    ;[65.41, 130.81, 196].forEach((frequency, index) => {
+      const drone = audioContext.createOscillator()
+      const droneGain = audioContext.createGain()
+      drone.type = 'sine'
+      drone.frequency.value = frequency
+      droneGain.gain.value = [0.12, 0.045, 0.025][index]
+      drone.connect(droneGain)
+      droneGain.connect(musicGain)
+      drone.start()
+    })
+
+    await audioContext.resume()
+    musicToggle.hidden = false
+    setMusicEnabled(true)
+  } catch (error) {
+    console.error('Unable to start welcome music.', error)
+    musicToggle.textContent = 'Music unavailable'
+    musicToggle.disabled = true
+    musicToggle.hidden = false
+  }
+}
 
 function openInvitation() {
   if (isOpening) return
   isOpening = true
+  startWelcomeMusic()
   envelope.classList.add('opening')
   setTimeout(() => {
     landing.classList.add('hidden')
@@ -166,6 +257,20 @@ function openInvitation() {
 }
 
 landing.addEventListener('click', openInvitation)
+musicToggle.addEventListener('click', async () => {
+  if (audioContext?.state === 'closed' || !musicGain) return
+
+  try {
+    if (!musicEnabled && audioContext.state !== 'running') {
+      await audioContext.resume()
+    }
+    setMusicEnabled(!musicEnabled)
+  } catch (error) {
+    console.error('Unable to change welcome music playback.', error)
+    musicToggle.textContent = 'Music unavailable'
+    musicToggle.disabled = true
+  }
+})
 
 // Lock scroll on landing
 document.body.style.overflow = 'hidden'
