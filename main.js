@@ -1,11 +1,11 @@
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar and Ananthi'
-const INVITEE_FAMILY = 'Ragav Karthik and Kaniyan'
+const INVITEE_FAMILY = ''
 const HOUSE_ADDRESS = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 641022'
-const MAP_QUERY = HOUSE_ADDRESS
+const MAP_QUERY = '11.096369, 76.948603'
 const MAP_LINK_QUERY = encodeURIComponent(MAP_QUERY)
 const MAP_EMBED_LINK = `https://maps.google.com/maps?q=${MAP_LINK_QUERY}&output=embed`
-const MAP_DIRECTIONS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${MAP_LINK_QUERY}`
+const MAP_DIRECTIONS_LINK = 'https://maps.app.goo.gl/SKvrRZEev3LXR54b6'
 
 // Event date — November 2, 2026, 9:00 AM IST
 const EVENT_DATE = new Date('2026-11-20T09:00:00+05:30')
