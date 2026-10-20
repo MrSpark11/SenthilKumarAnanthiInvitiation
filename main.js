@@ -43,8 +43,9 @@ document.querySelector('#app').innerHTML = `
       <div class="envelope-flap"></div>
       <div class="envelope-wax">
         <svg width="28" height="42" viewBox="0 0 32 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Murugan's Vel">
-          <path d="M16 2C14 10 8 14 8 21c0 5 3.2 8.5 8 10 4.8-1.5 8-5 8-10 0-7-6-11-8-19Z"/>
-          <path d="M16 8v23M16 31v15"/>
+          <path d="M16 2C13 9 6.5 16 6.5 22.5c0 5.5 3.8 9.8 9.5 12.5 5.7-2.7 9.5-7 9.5-12.5C25.5 16 19 9 16 2Z"/>
+          <path d="M16 7v27M8 33c2.2 1.6 4.9 2.6 8 3.2 3.1-.6 5.8-1.6 8-3.2M16 36.2V46"/>
+          <path d="M13 39h6M13 42h6"/>
         </svg>
       </div>
       <div class="envelope-body">
