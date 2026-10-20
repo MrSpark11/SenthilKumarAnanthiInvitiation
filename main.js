@@ -1,3 +1,5 @@
+import HOUSE_IMG from './House Image.jpeg'
+
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar and Ananthi'
 const INVITEE_FAMILY = ''
@@ -28,8 +30,6 @@ const iconNavigation = `<svg width="18" height="18" viewBox="0 0 24 24" fill="no
 const iconHome = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
 
 // ===== HTML =====
-const HOUSE_IMG = 'https://images.pexels.com/photos/35289099/pexels-photo-35289099.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-
 document.querySelector('#app').innerHTML = `
   <!-- Landing / Click to Open -->
   <div class="landing" id="landing">
