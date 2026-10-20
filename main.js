@@ -1,4 +1,4 @@
-import HOUSE_IMG from './House Image.jpeg'
+const HOUSE_IMG = new URL('./House Image.jpeg', import.meta.url).href
 
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
