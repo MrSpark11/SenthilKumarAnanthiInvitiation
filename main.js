@@ -258,7 +258,7 @@ function openInvitation() {
 
 landing.addEventListener('click', openInvitation)
 musicToggle.addEventListener('click', async () => {
-  if (audioContext?.state === 'closed' || !musicGain) return
+  if (!audioContext || audioContext.state === 'closed' || !musicGain) return
 
   try {
     if (!musicEnabled && audioContext.state !== 'running') {
@@ -278,6 +278,11 @@ document.body.style.overflow = 'hidden'
 // ===== Scroll Reveal =====
 function observeReveal() {
   const reveals = document.querySelectorAll('.reveal')
+  if (!('IntersectionObserver' in window)) {
+    reveals.forEach((el) => el.classList.add('in-view'))
+    return
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
