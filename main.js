@@ -41,7 +41,12 @@ document.querySelector('#app').innerHTML = `
     </svg>
     <div class="envelope" id="envelope">
       <div class="envelope-flap"></div>
-      <div class="envelope-wax">ॐ</div>
+      <div class="envelope-wax">
+        <svg width="28" height="42" viewBox="0 0 32 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Murugan's Vel">
+          <path d="M16 2C14 10 8 14 8 21c0 5 3.2 8.5 8 10 4.8-1.5 8-5 8-10 0-7-6-11-8-19Z"/>
+          <path d="M16 8v23M16 31v15"/>
+        </svg>
+      </div>
       <div class="envelope-body">
         <div class="envelope-content">
           <div class="envelope-label">Housewarming</div>
