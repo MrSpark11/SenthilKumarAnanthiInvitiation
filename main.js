@@ -1,7 +1,7 @@
 import HOUSE_IMG from './House Image.jpeg'
 
 // ===== Configuration =====
-const INVITEE_NAMES = 'Senthil Kumar and Ananthi'
+const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
 const INVITEE_FAMILY = ''
 const HOUSE_ADDRESS = 'Site No: 31, Teachers Colony, Ashokapuram, Coimbatore - 641022'
 const MAP_QUERY = '11.096369, 76.948603'
