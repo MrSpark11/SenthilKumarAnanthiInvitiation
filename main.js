@@ -8,6 +8,7 @@ const MAP_QUERY = '11.096369, 76.948603'
 const MAP_LINK_QUERY = encodeURIComponent(MAP_QUERY)
 const MAP_EMBED_LINK = `https://maps.google.com/maps?q=${MAP_LINK_QUERY}&output=embed`
 const MAP_DIRECTIONS_LINK = 'https://maps.app.goo.gl/SKvrRZEev3LXR54b6'
+const MUSIC_VIDEO_ID = 'xVcoYF--0mM'
 
 // Event date — November 2, 2026, 9:00 AM IST
 const EVENT_DATE = new Date('2026-11-20T09:00:00+05:30')
@@ -66,6 +67,14 @@ document.querySelector('#app').innerHTML = `
     <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" hidden>
       Music on
     </button>
+    <iframe
+      class="music-player"
+      id="musicPlayer"
+      title="Invitation music"
+      aria-hidden="true"
+      tabindex="-1"
+      allow="autoplay; encrypted-media"
+    ></iframe>
 
     <!-- House Section -->
     <section class="house-section reveal" id="houseSection">
@@ -151,98 +160,18 @@ const landing = document.getElementById('landing')
 const envelope = document.getElementById('envelope')
 const invitation = document.getElementById('invitation')
 const musicToggle = document.getElementById('musicToggle')
+const musicPlayer = document.getElementById('musicPlayer')
 let isOpening = false
-let audioContext
-let musicGain
 let musicEnabled = false
-let musicTimer
-
-function setMusicEnabled(enabled) {
-  musicEnabled = enabled
-  musicGain.gain.cancelScheduledValues(audioContext.currentTime)
-  musicGain.gain.setValueAtTime(musicGain.gain.value, audioContext.currentTime)
-  musicGain.gain.linearRampToValueAtTime(enabled ? 0.18 : 0, audioContext.currentTime + 0.3)
-  musicToggle.textContent = enabled ? 'Music on' : 'Music off'
-  musicToggle.setAttribute('aria-pressed', String(enabled))
-  musicToggle.setAttribute('aria-label', enabled ? 'Mute welcome music' : 'Play welcome music')
-  if (enabled && musicTimer === undefined) {
-    playWelcomePattern()
-  } else if (!enabled) {
-    window.clearTimeout(musicTimer)
-    musicTimer = undefined
-  }
-}
-
-function playWelcomePluck(frequency) {
-  const now = audioContext.currentTime
-  const noteGain = audioContext.createGain()
-  noteGain.gain.setValueAtTime(0.0001, now)
-  noteGain.gain.exponentialRampToValueAtTime(0.16, now + 0.08)
-  noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.6)
-  noteGain.connect(musicGain)
-
-  ;[1, 2.01].forEach((partial, index) => {
-    const oscillator = audioContext.createOscillator()
-    oscillator.type = 'sine'
-    oscillator.frequency.value = frequency * partial
-    oscillator.detune.value = index === 0 ? -2 : 2
-    oscillator.connect(noteGain)
-    oscillator.start(now)
-    oscillator.stop(now + 2.7)
-    oscillator.addEventListener('ended', () => oscillator.disconnect(), { once: true })
-  })
-
-  window.setTimeout(() => noteGain.disconnect(), 2800)
-}
-
-function playWelcomePattern(noteIndex = 0) {
-  const notes = [261.63, 392, 329.63, 392]
-  playWelcomePluck(notes[noteIndex])
-  musicTimer = window.setTimeout(() => playWelcomePattern((noteIndex + 1) % notes.length), 2400)
-}
-
-async function startWelcomeMusic() {
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext
-  if (!AudioContextClass) {
-    console.error('Welcome music is unavailable because this browser does not support Web Audio.')
-    musicToggle.textContent = 'Music unavailable'
-    musicToggle.disabled = true
-    musicToggle.hidden = false
-    return
-  }
-
-  try {
-    audioContext = new AudioContextClass()
-    musicGain = audioContext.createGain()
-    musicGain.gain.value = 0
-    musicGain.connect(audioContext.destination)
-
-    ;[65.41, 130.81, 196].forEach((frequency, index) => {
-      const drone = audioContext.createOscillator()
-      const droneGain = audioContext.createGain()
-      drone.type = 'sine'
-      drone.frequency.value = frequency
-      droneGain.gain.value = [0.12, 0.045, 0.025][index]
-      drone.connect(droneGain)
-      droneGain.connect(musicGain)
-      drone.start()
-    })
-
-    await audioContext.resume()
-    musicToggle.hidden = false
-    setMusicEnabled(true)
-  } catch (error) {
-    console.error('Unable to start welcome music.', error)
-    musicToggle.textContent = 'Music unavailable'
-    musicToggle.disabled = true
-    musicToggle.hidden = false
-  }
-}
 
 function openInvitation() {
   if (isOpening) return
   isOpening = true
-  startWelcomeMusic()
+  musicEnabled = true
+  musicToggle.hidden = false
+  musicToggle.setAttribute('aria-pressed', 'true')
+  musicToggle.setAttribute('aria-label', 'Mute welcome music')
+  musicPlayer.src = `https://www.youtube.com/embed/${MUSIC_VIDEO_ID}?autoplay=1&start=5&playsinline=1&controls=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`
   envelope.classList.add('opening')
   setTimeout(() => {
     landing.classList.add('hidden')
@@ -257,19 +186,17 @@ function openInvitation() {
 }
 
 landing.addEventListener('click', openInvitation)
-musicToggle.addEventListener('click', async () => {
-  if (!audioContext || audioContext.state === 'closed' || !musicGain) return
+musicToggle.addEventListener('click', () => {
+  if (!musicPlayer.src) return
 
-  try {
-    if (!musicEnabled && audioContext.state !== 'running') {
-      await audioContext.resume()
-    }
-    setMusicEnabled(!musicEnabled)
-  } catch (error) {
-    console.error('Unable to change welcome music playback.', error)
-    musicToggle.textContent = 'Music unavailable'
-    musicToggle.disabled = true
-  }
+  musicEnabled = !musicEnabled
+  musicToggle.textContent = musicEnabled ? 'Music on' : 'Music off'
+  musicToggle.setAttribute('aria-pressed', String(musicEnabled))
+  musicToggle.setAttribute('aria-label', musicEnabled ? 'Mute welcome music' : 'Play welcome music')
+  musicPlayer.contentWindow.postMessage(
+    JSON.stringify({ event: 'command', func: musicEnabled ? 'playVideo' : 'pauseVideo', args: [] }),
+    'https://www.youtube.com'
+  )
 })
 
 // Lock scroll on landing
