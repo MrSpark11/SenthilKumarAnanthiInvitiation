@@ -1,4 +1,5 @@
 const HOUSE_IMG = new URL('./House Image.jpeg', import.meta.url).href
+const MUSIC_FILE = new URL('./Vachindamma-Vachindamma.mp3', import.meta.url).href
 
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
@@ -8,7 +9,6 @@ const MAP_QUERY = '11.096369, 76.948603'
 const MAP_LINK_QUERY = encodeURIComponent(MAP_QUERY)
 const MAP_EMBED_LINK = `https://maps.google.com/maps?q=${MAP_LINK_QUERY}&output=embed`
 const MAP_DIRECTIONS_LINK = 'https://maps.app.goo.gl/SKvrRZEev3LXR54b6'
-const MUSIC_VIDEO_ID = 'xVcoYF--0mM'
 
 // Event date — November 2, 2026, 9:00 AM IST
 const EVENT_DATE = new Date('2026-11-20T09:00:00+05:30')
@@ -67,14 +67,7 @@ document.querySelector('#app').innerHTML = `
     <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" hidden>
       Music on
     </button>
-    <iframe
-      class="music-player"
-      id="musicPlayer"
-      title="Invitation music"
-      aria-hidden="true"
-      tabindex="-1"
-      allow="autoplay; encrypted-media"
-    ></iframe>
+    <audio id="musicPlayer" src="${MUSIC_FILE}" preload="metadata" hidden></audio>
 
     <!-- House Section -->
     <section class="house-section reveal" id="houseSection">
@@ -164,14 +157,37 @@ const musicPlayer = document.getElementById('musicPlayer')
 let isOpening = false
 let musicEnabled = false
 
+function updateMusicToggle() {
+  musicToggle.textContent = musicEnabled ? 'Music on' : 'Music off'
+  musicToggle.setAttribute('aria-pressed', String(musicEnabled))
+  musicToggle.setAttribute('aria-label', musicEnabled ? 'Mute welcome music' : 'Play welcome music')
+}
+
+function playWelcomeMusic() {
+  const seekToStart = () => {
+    musicPlayer.currentTime = 5
+  }
+
+  if (musicPlayer.readyState >= HTMLMediaElement.HAVE_METADATA) {
+    seekToStart()
+  } else {
+    musicPlayer.addEventListener('loadedmetadata', seekToStart, { once: true })
+  }
+
+  musicPlayer.play().catch((error) => {
+    console.error('Unable to play welcome music.', error)
+    musicEnabled = false
+    updateMusicToggle()
+  })
+}
+
 function openInvitation() {
   if (isOpening) return
   isOpening = true
   musicEnabled = true
   musicToggle.hidden = false
-  musicToggle.setAttribute('aria-pressed', 'true')
-  musicToggle.setAttribute('aria-label', 'Mute welcome music')
-  musicPlayer.src = `https://www.youtube.com/embed/${MUSIC_VIDEO_ID}?autoplay=1&start=5&playsinline=1&controls=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`
+  updateMusicToggle()
+  playWelcomeMusic()
   envelope.classList.add('opening')
   setTimeout(() => {
     landing.classList.add('hidden')
@@ -187,16 +203,17 @@ function openInvitation() {
 
 landing.addEventListener('click', openInvitation)
 musicToggle.addEventListener('click', () => {
-  if (!musicPlayer.src) return
-
   musicEnabled = !musicEnabled
-  musicToggle.textContent = musicEnabled ? 'Music on' : 'Music off'
-  musicToggle.setAttribute('aria-pressed', String(musicEnabled))
-  musicToggle.setAttribute('aria-label', musicEnabled ? 'Mute welcome music' : 'Play welcome music')
-  musicPlayer.contentWindow.postMessage(
-    JSON.stringify({ event: 'command', func: musicEnabled ? 'playVideo' : 'pauseVideo', args: [] }),
-    'https://www.youtube.com'
-  )
+  updateMusicToggle()
+  if (musicEnabled) {
+    musicPlayer.play().catch((error) => {
+      console.error('Unable to resume welcome music.', error)
+      musicEnabled = false
+      updateMusicToggle()
+    })
+  } else {
+    musicPlayer.pause()
+  }
 })
 
 // Lock scroll on landing
