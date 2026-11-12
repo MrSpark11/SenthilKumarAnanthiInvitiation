@@ -159,6 +159,7 @@ const musicPlayer = document.getElementById('musicPlayer')
 let isOpening = false
 let musicEnabled = false
 let musicHasStarted = false
+let shouldResumeMusic = false
 
 musicPlayer.addEventListener('timeupdate', () => {
   if (musicPlayer.currentTime >= MUSIC_LOOP_END_SECONDS) {
@@ -172,10 +173,18 @@ function updateMusicToggle() {
   musicToggle.setAttribute('aria-label', musicEnabled ? 'Mute welcome music' : 'Play welcome music')
 }
 
-function stopWelcomeMusic() {
-  musicEnabled = false
+function pauseForBackground() {
+  if (musicEnabled && !musicPlayer.paused) {
+    shouldResumeMusic = true
+  }
   musicPlayer.pause()
-  updateMusicToggle()
+}
+
+function resumeAfterBackground() {
+  if (shouldResumeMusic && !document.hidden) {
+    shouldResumeMusic = false
+    playWelcomeMusic()
+  }
 }
 
 function playWelcomeMusic() {
@@ -203,10 +212,13 @@ function playWelcomeMusic() {
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    stopWelcomeMusic()
+    pauseForBackground()
+  } else {
+    resumeAfterBackground()
   }
 })
-window.addEventListener('pagehide', stopWelcomeMusic)
+window.addEventListener('pagehide', pauseForBackground)
+window.addEventListener('pageshow', resumeAfterBackground)
 
 function openInvitation() {
   if (isOpening) return
@@ -231,6 +243,7 @@ function openInvitation() {
 landing.addEventListener('click', openInvitation)
 musicToggle.addEventListener('click', () => {
   musicEnabled = !musicEnabled
+  shouldResumeMusic = false
   updateMusicToggle()
   if (musicEnabled) {
     playWelcomeMusic()
