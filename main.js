@@ -172,6 +172,12 @@ function updateMusicToggle() {
   musicToggle.setAttribute('aria-label', musicEnabled ? 'Mute welcome music' : 'Play welcome music')
 }
 
+function stopWelcomeMusic() {
+  musicEnabled = false
+  musicPlayer.pause()
+  updateMusicToggle()
+}
+
 function playWelcomeMusic() {
   const startPlayback = () => {
     if (!musicEnabled) return
@@ -194,6 +200,13 @@ function playWelcomeMusic() {
     musicPlayer.addEventListener('loadedmetadata', startPlayback, { once: true })
   }
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopWelcomeMusic()
+  }
+})
+window.addEventListener('pagehide', stopWelcomeMusic)
 
 function openInvitation() {
   if (isOpening) return
