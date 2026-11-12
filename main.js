@@ -1,6 +1,7 @@
 const HOUSE_IMG = new URL('./House Image.jpeg', import.meta.url).href
 const MUSIC_FILE = new URL('./Vachindamma-Vachindamma.mp3', import.meta.url).href
-const MUSIC_LOOP_END_SECONDS = 22
+const MUSIC_LOOP_START_SECONDS = 4
+const MUSIC_LOOP_END_SECONDS = 23
 
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
@@ -157,10 +158,11 @@ const musicToggle = document.getElementById('musicToggle')
 const musicPlayer = document.getElementById('musicPlayer')
 let isOpening = false
 let musicEnabled = false
+let musicHasStarted = false
 
 musicPlayer.addEventListener('timeupdate', () => {
   if (musicPlayer.currentTime >= MUSIC_LOOP_END_SECONDS) {
-    musicPlayer.currentTime = 0
+    musicPlayer.currentTime = MUSIC_LOOP_START_SECONDS
   }
 })
 
@@ -171,11 +173,26 @@ function updateMusicToggle() {
 }
 
 function playWelcomeMusic() {
-  musicPlayer.play().catch((error) => {
-    console.error('Unable to play welcome music.', error)
-    musicEnabled = false
-    updateMusicToggle()
-  })
+  const startPlayback = () => {
+    if (!musicEnabled) return
+
+    if (!musicHasStarted) {
+      musicPlayer.currentTime = MUSIC_LOOP_START_SECONDS
+      musicHasStarted = true
+    }
+
+    musicPlayer.play().catch((error) => {
+      console.error('Unable to play welcome music.', error)
+      musicEnabled = false
+      updateMusicToggle()
+    })
+  }
+
+  if (musicPlayer.readyState >= HTMLMediaElement.HAVE_METADATA) {
+    startPlayback()
+  } else {
+    musicPlayer.addEventListener('loadedmetadata', startPlayback, { once: true })
+  }
 }
 
 function openInvitation() {
@@ -203,11 +220,7 @@ musicToggle.addEventListener('click', () => {
   musicEnabled = !musicEnabled
   updateMusicToggle()
   if (musicEnabled) {
-    musicPlayer.play().catch((error) => {
-      console.error('Unable to resume welcome music.', error)
-      musicEnabled = false
-      updateMusicToggle()
-    })
+    playWelcomeMusic()
   } else {
     musicPlayer.pause()
   }
