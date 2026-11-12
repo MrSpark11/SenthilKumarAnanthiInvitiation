@@ -1,6 +1,6 @@
 const HOUSE_IMG = new URL('./House Image.jpeg', import.meta.url).href
 const MUSIC_FILE = new URL('./Vachindamma-Vachindamma.mp3', import.meta.url).href
-const MUSIC_STOP_SECONDS = 22
+const MUSIC_LOOP_END_SECONDS = 22
 
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
@@ -159,9 +159,8 @@ let isOpening = false
 let musicEnabled = false
 
 musicPlayer.addEventListener('timeupdate', () => {
-  if (musicPlayer.currentTime >= MUSIC_STOP_SECONDS) {
-    musicPlayer.currentTime = MUSIC_STOP_SECONDS
-    musicPlayer.pause()
+  if (musicPlayer.currentTime >= MUSIC_LOOP_END_SECONDS) {
+    musicPlayer.currentTime = 0
   }
 })
 
