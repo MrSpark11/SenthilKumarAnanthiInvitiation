@@ -1,5 +1,6 @@
 const HOUSE_IMG = new URL('./House Image.jpeg', import.meta.url).href
 const MUSIC_FILE = new URL('./Vachindamma-Vachindamma.mp3', import.meta.url).href
+const MUSIC_LOOP_END_SECONDS = 22
 
 // ===== Configuration =====
 const INVITEE_NAMES = 'Senthil Kumar & Ananthi'
@@ -157,6 +158,12 @@ const musicPlayer = document.getElementById('musicPlayer')
 let isOpening = false
 let musicEnabled = false
 
+musicPlayer.addEventListener('timeupdate', () => {
+  if (musicPlayer.currentTime >= MUSIC_LOOP_END_SECONDS) {
+    musicPlayer.currentTime = 0
+  }
+})
+
 function updateMusicToggle() {
   musicToggle.textContent = musicEnabled ? 'Music on' : 'Music off'
   musicToggle.setAttribute('aria-pressed', String(musicEnabled))
@@ -164,16 +171,6 @@ function updateMusicToggle() {
 }
 
 function playWelcomeMusic() {
-  const seekToStart = () => {
-    musicPlayer.currentTime = 5
-  }
-
-  if (musicPlayer.readyState >= HTMLMediaElement.HAVE_METADATA) {
-    seekToStart()
-  } else {
-    musicPlayer.addEventListener('loadedmetadata', seekToStart, { once: true })
-  }
-
   musicPlayer.play().catch((error) => {
     console.error('Unable to play welcome music.', error)
     musicEnabled = false
